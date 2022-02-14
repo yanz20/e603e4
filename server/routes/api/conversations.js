@@ -78,4 +78,31 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.post("/readConversation", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    const { conversationId, senderId } = req.body;
+    const messages = await Message.findAll({ where: { conversationId, senderId, read: false } });
+    messages.forEach(async (msg) => {
+      msg.read = true;
+      const saved = await msg.save();
+      if (!saved) throw new error("Message read status can not be updated");
+    });
+
+    const conversation = await Conversation.findOne({
+      where: { id: conversationId },
+      attributes: ["id"],
+      order: [[Message, "createdAt", "ASC"]],
+      include: [
+        { model: Message, order: ["createdAt", "DESC"] }
+      ]
+    });
+    res.json(conversation);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

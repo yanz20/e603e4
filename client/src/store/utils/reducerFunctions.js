@@ -1,3 +1,15 @@
+export const addAllConvosToStore = (conversations) => {
+  let allConversations = [...conversations];
+  allConversations.map(convo => {
+    const msgLength = convo.messages.length
+    if (msgLength > 0) {
+      convo.messages.reverse();
+      convo.isRead = convo.messages[msgLength - 1].senderId !== convo.otherUser.id || convo.messages[msgLength - 1].read;
+    };
+  });
+  return allConversations;
+};
+
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -22,6 +34,19 @@ export const addMessageToStore = (state, payload) => {
     }
   });
 };
+
+export const updateConversation = (state, newConvo) => {
+  return state.map((convo) => {
+    if (convo.id === newConvo.id) {
+      const convoCopy = { ...convo };
+      convoCopy.messages = newConvo.messages;
+      convoCopy.isRead = true;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  })
+}
 
 export const addOnlineUserToStore = (state, id) => {
   return state.map((convo) => {
