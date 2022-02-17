@@ -1,11 +1,11 @@
 const Sequelize = require("sequelize");
 const db = require("../db");
 
-const Message = db.define("message", {
-  text: {
+const Group = db.define("group", {
+  name: {
     type: Sequelize.STRING,
     allowNull: false,
   }
 });
 
-module.exports = Message;
+module.exports = Group;
