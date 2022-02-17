@@ -9,7 +9,6 @@ const Message_Recipient = require("./message_recipient");
 User.hasMany(Message);
 Message.belongsTo(User, { as: "sender_id"});
 User.hasMany(Message_Recipient);
-Message_Recipient.belongsTo(User, { as: "recipient_id"});
 User.belongsToMany(Group, { through: User_Group});
 Group.belongsToMany(User, { through: User_Group});
 User_Group.hasMany(Message_Recipient);
