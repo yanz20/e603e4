@@ -78,4 +78,39 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.put("/read", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    const { conversationId, senderId } = req.body;
+
+    const convo = await Conversation.findOne({
+      where: {
+        id: conversationId,
+        [Op.or]: {
+          user1Id: senderId,
+          user2Id: senderId,
+        }
+      },
+      attributes: ["id"],
+      order: [[Message, "createdAt", "ASC"]],
+      include: [
+        { model: Message, order: ["createdAt", "DESC"] }
+      ]
+    });
+
+    if (!convo) {
+      return res.sendStatus(403);
+    }
+    const saved = await Message.update({ read: true }, { where: { conversationId, senderId, read: false } });
+    if (!saved) throw new error("Message read status can not be updated");
+
+    convo.messages.forEach(msg => msg.read = true);
+    res.json(convo);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

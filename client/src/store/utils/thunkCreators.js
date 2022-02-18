@@ -4,6 +4,7 @@ import {
   gotConversations,
   addConversation,
   setNewMessage,
+  setMessagesRead,
   setSearchedUsers,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
@@ -83,12 +84,21 @@ const saveMessage = async (body) => {
   return data;
 };
 
+const readMessages = async (body) => {
+  const { data } = await axios.put("api/conversations/read", body);
+  return data;
+}
+
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
   });
+};
+
+const sendMessagesRead = (data) => {
+  socket.emit("new-message-read", data);
 };
 
 // message format to send: {recipientId, text, conversationId}
@@ -100,10 +110,22 @@ export const postMessage = (body) => async (dispatch) => {
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(data.message, true));
     }
 
     sendMessage(data, body);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const postMessageRead = (body) => async (dispatch) => {
+  try {
+    if (body.conversation.unReadNum > 0) {
+      const data = await readMessages({ conversationId: body.conversation.id, senderId: body.senderId });
+      dispatch(setMessagesRead(data.id, true));
+      sendMessagesRead(data);
+    }
   } catch (error) {
     console.error(error);
   }

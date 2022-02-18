@@ -1,5 +1,7 @@
 import {
+  addAllConvosToStore,
   addNewConvoToStore,
+  updateConversation,
   addOnlineUserToStore,
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
@@ -10,6 +12,7 @@ import {
 
 const GET_CONVERSATIONS = "GET_CONVERSATIONS";
 const SET_MESSAGE = "SET_MESSAGE";
+const SET_MESSAGE_READ = "SET_MESSAGE_READ";
 const ADD_ONLINE_USER = "ADD_ONLINE_USER";
 const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
@@ -25,10 +28,17 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender) => {
+export const setNewMessage = (message, selfUpdate = false, sender) => {
   return {
     type: SET_MESSAGE,
-    payload: { message, sender: sender || null },
+    payload: { message, selfUpdate, sender: sender || null },
+  };
+};
+
+export const setMessagesRead = (id, selfUpdate = false) => {
+  return {
+    type: SET_MESSAGE_READ,
+    payload: {id, selfUpdate},
   };
 };
 
@@ -72,11 +82,11 @@ export const addConversation = (recipientId, newMessage) => {
 const reducer = (state = [], action) => {
   switch (action.type) {
     case GET_CONVERSATIONS:
-      let conversations = [...action.conversations]
-      conversations.map(convo => {convo.messages && convo.messages.reverse()})
-      return conversations;
+      return addAllConvosToStore(action.conversations);
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
+    case SET_MESSAGE_READ:
+      return updateConversation(state, action.payload);
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }
