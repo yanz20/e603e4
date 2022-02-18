@@ -85,7 +85,7 @@ const saveMessage = async (body) => {
 };
 
 const readMessages = async (body) => {
-  const { data } = await axios.post("api/conversations/readConversation", body);
+  const { data } = await axios.put("api/conversations/read", body);
   return data;
 }
 
@@ -97,6 +97,10 @@ const sendMessage = (data, body) => {
   });
 };
 
+const sendMessagesRead = (data) => {
+  socket.emit("new-message-read", data);
+};
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async (dispatch) => {
@@ -106,7 +110,7 @@ export const postMessage = (body) => async (dispatch) => {
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(data.message, true));
     }
 
     sendMessage(data, body);
@@ -117,9 +121,10 @@ export const postMessage = (body) => async (dispatch) => {
 
 export const postMessageRead = (body) => async (dispatch) => {
   try {
-    if (!body.conversation.isRead) {
-      const data = await readMessages({conversationId: body.conversation.id, senderId: body.senderId});
-      dispatch(setMessagesRead(data));
+    if (body.conversation.unReadNum > 0) {
+      const data = await readMessages({ conversationId: body.conversation.id, senderId: body.senderId });
+      dispatch(setMessagesRead(data.id, data.messages, true));
+      sendMessagesRead(data);
     }
   } catch (error) {
     console.error(error);

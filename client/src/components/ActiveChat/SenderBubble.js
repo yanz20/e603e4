@@ -26,8 +26,8 @@ const useStyles = makeStyles(() => ({
     borderRadius: "10px 10px 0 10px"
   },
   avatar: {
-    height: 15,
-    width: 15,
+    height: 25,
+    width: 25,
     marginRight: 11,
     marginTop: 6
   },
@@ -42,7 +42,7 @@ const SenderBubble = (props) => {
       <Box className={classes.bubble}>
         <Typography className={classes.text}>{text}</Typography>
       </Box>
-      { isLastRead && <Avatar alt={otherUser.username} src={otherUser.photoUrl} className={classes.avatar}></Avatar>}
+      { isLastRead && <Avatar alt={otherUser.username} src={otherUser.photoUrl} className={classes.avatar} />}
     </Box>
   );
 };

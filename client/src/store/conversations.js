@@ -1,5 +1,6 @@
 import {
   addAllConvosToStore,
+  setActiveConversation,
   addNewConvoToStore,
   updateConversation,
   addOnlineUserToStore,
@@ -28,17 +29,17 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender) => {
+export const setNewMessage = (message, selfUpdate = false, sender) => {
   return {
     type: SET_MESSAGE,
-    payload: { message, sender: sender || null },
+    payload: { message, selfUpdate, sender: sender || null },
   };
 };
 
-export const setMessagesRead = (data) => {
+export const setMessagesRead = (id, messages, selfUpdate = false) => {
   return {
     type: SET_MESSAGE_READ,
-    data,
+    payload: {id, messages, selfUpdate},
   };
 };
 
@@ -86,7 +87,7 @@ const reducer = (state = [], action) => {
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
     case SET_MESSAGE_READ:
-      return updateConversation(state, action.data);
+      return updateConversation(state, action.payload);
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }
