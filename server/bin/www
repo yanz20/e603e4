@@ -49,8 +49,7 @@ io.on("connection", (socket) => {
 
   socket.on("new-message-read", (data) => {
     socket.broadcast.emit("new-message-read", {
-      id: data.id,
-      messages: data.messages
+      id: data.id
     });
   });
 

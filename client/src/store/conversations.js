@@ -1,6 +1,5 @@
 import {
   addAllConvosToStore,
-  setActiveConversation,
   addNewConvoToStore,
   updateConversation,
   addOnlineUserToStore,
@@ -36,10 +35,10 @@ export const setNewMessage = (message, selfUpdate = false, sender) => {
   };
 };
 
-export const setMessagesRead = (id, messages, selfUpdate = false) => {
+export const setMessagesRead = (id, selfUpdate = false) => {
   return {
     type: SET_MESSAGE_READ,
-    payload: {id, messages, selfUpdate},
+    payload: {id, selfUpdate},
   };
 };
 

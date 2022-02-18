@@ -123,7 +123,7 @@ export const postMessageRead = (body) => async (dispatch) => {
   try {
     if (body.conversation.unReadNum > 0) {
       const data = await readMessages({ conversationId: body.conversation.id, senderId: body.senderId });
-      dispatch(setMessagesRead(data.id, data.messages, true));
+      dispatch(setMessagesRead(data.id, true));
       sendMessagesRead(data);
     }
   } catch (error) {

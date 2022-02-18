@@ -101,7 +101,7 @@ router.put("/read", async (req, res, next) => {
     });
 
     if (!convo) {
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
     const saved = await Message.update({ read: true }, { where: { conversationId, senderId, read: false } });
     if (!saved) throw new error("Message read status can not be updated");

@@ -5,9 +5,10 @@ export const addAllConvosToStore = (conversations) => {
     const msgLength = convo.messages.length
     if (msgLength > 0) {
       convo.unReadNum = convo.messages.filter(msg => { return (msg.senderId === convo.otherUser.id && !msg.read) }).length;
-      convo.otherUsrReadId = convo.messages[convo.messages.findIndex(msg => msg.senderId !== convo.otherUser.id && msg.read)]?.id;
+      convo.lastReadId = convo.messages[convo.messages.findIndex(msg => msg.senderId !== convo.otherUser.id && msg.read)]?.id;
       convo.messages.reverse();
     };
+    return convo;
   });
   return allConversations;
 };
@@ -44,15 +45,18 @@ export const addMessageToStore = (state, payload) => {
 };
 
 export const updateConversation = (state, payload) => {
-  const { id, messages, selfUpdate } = payload;
+  const { id, selfUpdate } = payload;
   return state.map((convo) => {
     if (convo.id === id) {
       const convoCopy = { ...convo };
-      convoCopy.messages = messages;
+      convoCopy.messages.map(msg => {
+        msg.read = true; 
+        return msg;
+      });
       if (selfUpdate) {
         convoCopy.unReadNum = 0;
       } else {
-        convoCopy.otherUsrReadId = messages[messages.length - 1].id;
+        convoCopy.lastReadId = convoCopy.messages[convoCopy.messages.length - 1].id;
       }
       return convoCopy;
     } else {

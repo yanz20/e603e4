@@ -31,12 +31,12 @@ const ActiveChat = (props) => {
       const lastMessage = conversation.messages[conversation.messages.length - 1];
       if (!lastMessage.read && lastMessage.senderId !== user.id) {
         const readMessages = async () => {
-          await postMessageRead({ conversation, senderId: conversation.otherUser.id });
+          await postMessageRead({id: conversation.id, unReadNum: conversation.unReadNum}, conversation.otherUser.id);
         }
         readMessages()
       }
     }
-  }, [conversation.messages?.length])
+  }, [conversation.messages, conversation.id, conversation.unReadNum, conversation.otherUser, user.id, postMessageRead])
 
   return (
     <Box className={classes.root}>
@@ -50,7 +50,7 @@ const ActiveChat = (props) => {
             <Messages
               messages={conversation.messages}
               otherUser={conversation.otherUser}
-              otherUsrReadId={conversation.otherUsrReadId}
+              lastReadId={conversation.lastReadId}
               userId={user.id}
             />
             <Input
@@ -79,7 +79,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     postMessageRead: (conversation, senderId) => {
-      dispatch(postMessageRead(conversation, senderId));
+      dispatch(postMessageRead({conversation, senderId}));
     }
   };
 };
